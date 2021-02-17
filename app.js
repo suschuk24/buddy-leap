@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let startPoint = 150
     let doodlerBottomSpace = startPoint
     let isGameOver = false
+    let score = 0
     
     // platform properties
     let platformCount = 5
@@ -62,6 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 platform.bottom -= 4
                 let visual = platform.visual
                 visual.style.bottom = platform.bottom + "px"
+
+                if(platform.bottom < 10) {
+                    let firstPlatform = platforms[0].visual
+                    firstPlatform.classList.remove("platform")
+                    platforms.shift()
+                    score++
+                    let newPlatform = new Platform(600)
+                    platforms.push(newPlatform)
+                }
             })
         }
     }
@@ -106,8 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameOver() {
         console.log("game over")
         isGameOver = true
+        while(grid.firstChild) {
+            grid.removeChild(grid.firstChild)
+        }
+        grid.innerHTML = score
         clearInterval(upTimerId)
         clearInterval(downTimerId)
+        clearInterval(leftTimerId)
+        clearInterval(rightTimerId)
     }
 
     function control(e) {
@@ -145,8 +161,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 doodlerLeftSpace += 5
                 doodler.style.left = doodlerLeftSpace + "px"
             } else moveLeft()
-
         }, 30)
+    }
+
+    function moveStraight() {
+        isGoingLeft = false
+        isGoingRight = false
+        clearInterval(leftTimerId)
+        clearInterval(rightTimerId)
     }
 
     function start() {
